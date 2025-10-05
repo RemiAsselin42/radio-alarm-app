@@ -1,8 +1,9 @@
 package expo.modules.systemalarm
 
+import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactPackage
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 
-class ExpoSystemAlarmPackage : expo.modules.core.interfaces.Package {
+class ExpoSystemAlarmPackage : Package {
   override fun createExpoModules(): List<Module> = listOf(ExpoSystemAlarmModule())
 }

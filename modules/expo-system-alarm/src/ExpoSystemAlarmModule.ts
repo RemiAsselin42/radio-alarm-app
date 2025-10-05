@@ -1,3 +1,3 @@
-const { requireNativeModule } = require('expo');
+const { requireNativeModule } = require("expo");
 
-export default requireNativeModule('ExpoSystemAlarm');
+export default requireNativeModule("ExpoSystemAlarm");

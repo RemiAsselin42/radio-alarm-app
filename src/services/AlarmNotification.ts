@@ -141,7 +141,9 @@ class AlarmNotificationService {
             }
           }
         } catch (error) {
-          console.log("⚠️ Native alarm not available, using optimized fallback");
+          console.log(
+            "⚠️ Native alarm not available, using optimized fallback"
+          );
         }
 
         // Fallback : Utiliser le service d'alarme optimisé
@@ -167,7 +169,9 @@ class AlarmNotificationService {
             );
 
           if (systemAlarmId) {
-            console.log("🔶 Optimized system-like alarm scheduled successfully");
+            console.log(
+              "🔶 Optimized system-like alarm scheduled successfully"
+            );
             return systemAlarmId;
           }
         } else {

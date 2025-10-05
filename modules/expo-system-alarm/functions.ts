@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo';
+import { requireNativeModule } from "expo";
 
 // Interface TypeScript pour le module natif
 interface ExpoSystemAlarmModule {
@@ -9,20 +9,21 @@ interface ExpoSystemAlarmModule {
     stationName: string,
     vibrate: boolean
   ): Promise<boolean>;
-  
+
   cancelSystemAlarm(alarmId: string): Promise<boolean>;
-  
+
   setAlarmAudioStream(): Promise<void>;
-  
+
   restoreAudioStream(): Promise<void>;
-  
+
   canScheduleExactAlarms(): Promise<boolean>;
-  
+
   openAlarmSettings(): Promise<void>;
 }
 
 // Obtenir le module natif avec typage
-const NativeModule = requireNativeModule<ExpoSystemAlarmModule>('ExpoSystemAlarm');
+const NativeModule =
+  requireNativeModule<ExpoSystemAlarmModule>("ExpoSystemAlarm");
 
 export async function scheduleSystemAlarm(
   alarmId: string,

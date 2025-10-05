@@ -49,7 +49,7 @@ class RadioPlayerService {
       } catch (error) {
         console.log("🔶 Using fallback audio configuration");
       }
-      
+
       await AlarmVolumeService.setAlarmVolume();
 
       // Arrêter la lecture en cours si nécessaire
@@ -139,7 +139,7 @@ class RadioPlayerService {
       } catch (error) {
         console.log("Audio stream restore not available");
       }
-      
+
       await AlarmVolumeService.restoreOriginalVolume();
     } catch (error) {
       console.error("Error stopping radio:", error);

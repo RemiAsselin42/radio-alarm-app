@@ -49,7 +49,10 @@ class AlarmReceiver : BroadcastReceiver() {
     
     // Déverrouiller l'écran si possible
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-      keyguardManager.requestDismissKeyguard(null, null)
+      val activity: android.app.Activity? = null // Safe null handling
+      if (activity != null) {
+        keyguardManager.requestDismissKeyguard(activity, null)
+      }
     }
   }
   
@@ -103,9 +106,7 @@ class AlarmReceiver : BroadcastReceiver() {
     // Intent pour ouvrir l'application
     val fullScreenIntent = Intent(context, Class.forName("${context.packageName}.MainActivity")).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
-              Intent.FLAG_ACTIVITY_CLEAR_TOP or
-              Intent.FLAG_ACTIVITY_TURN_SCREEN_ON or
-              Intent.FLAG_ACTIVITY_SHOW_WHEN_LOCKED
+              Intent.FLAG_ACTIVITY_CLEAR_TOP
       
       putExtra("isSystemAlarm", true)
       putExtra("alarmId", alarmId)
