@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "Radio Alarm",
+    "slug": "radio-alarm-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#2a2a2a"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.radioalarm.app"
+    },
+    "android": {
+      "package": "com.radioalarm.app",
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "USE_EXACT_ALARM",
+        "WAKE_LOCK",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "FOREGROUND_SERVICE",
+        "POST_NOTIFICATIONS",
+        "USE_FULL_SCREEN_INTENT",
+        "SYSTEM_ALERT_WINDOW"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#2a2a2a",
+          "sounds": []
+        }
+      ],
+      "./plugins/withLockScreenAlarm"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3c42215a-12dc-4583-ab87-7a77f6255da1"
+      }
+    }
+  }
+}
