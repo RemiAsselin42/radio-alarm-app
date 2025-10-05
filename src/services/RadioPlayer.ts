@@ -1,5 +1,7 @@
 import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from "expo-audio";
 import { RadioStation } from "../types";
+import AlarmVolumeService from "./AlarmVolumeService";
+import * as SystemAlarm from "../../modules/expo-system-alarm/functions";
 
 class RadioPlayerService {
   private sound: AudioPlayer | null = null;
@@ -40,6 +42,16 @@ class RadioPlayerService {
 
   async playStation(station: RadioStation, fadeIn: boolean = false) {
     try {
+      // Essayer d'utiliser le canal audio natif d'alarme
+      try {
+        await SystemAlarm.setAlarmAudioStream();
+        console.log("✅ Native alarm audio stream activated");
+      } catch (error) {
+        console.log("🔶 Using fallback audio configuration");
+      }
+      
+      await AlarmVolumeService.setAlarmVolume();
+
       // Arrêter la lecture en cours si nécessaire
       if (this.sound) {
         await this.stop();
@@ -120,6 +132,15 @@ class RadioPlayerService {
         this.isPlaying = false;
         console.log("Radio stopped");
       }
+
+      // Restaurer le canal audio et le volume original
+      try {
+        await SystemAlarm.restoreAudioStream();
+      } catch (error) {
+        console.log("Audio stream restore not available");
+      }
+      
+      await AlarmVolumeService.restoreOriginalVolume();
     } catch (error) {
       console.error("Error stopping radio:", error);
     }

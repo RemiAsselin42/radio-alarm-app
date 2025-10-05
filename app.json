@@ -8,9 +8,7 @@
     "splash": {
       "backgroundColor": "#2a2a2a"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.radioalarm.app"
@@ -28,7 +26,21 @@
         "FOREGROUND_SERVICE",
         "POST_NOTIFICATIONS",
         "USE_FULL_SCREEN_INTENT",
-        "SYSTEM_ALERT_WINDOW"
+        "SYSTEM_ALERT_WINDOW",
+        "TURN_SCREEN_ON",
+        "SHOW_WHEN_LOCKED",
+        "DISABLE_KEYGUARD",
+        "MODIFY_AUDIO_SETTINGS"
+      ],
+      "intentFilters": [
+        {
+          "action": "android.intent.action.MAIN",
+          "category": "android.intent.category.LAUNCHER"
+        },
+        {
+          "action": "com.radioalarm.app.ALARM_ACTION",
+          "category": "android.intent.category.DEFAULT"
+        }
       ]
     },
     "plugins": [
@@ -36,10 +48,15 @@
         "expo-notifications",
         {
           "color": "#2a2a2a",
-          "sounds": []
+          "sounds": [],
+          "mode": "production",
+          "iosDisplayInForeground": true,
+          "androidMode": "exact",
+          "androidCollapsedTitle": "🔔 Alarme Radio"
         }
       ],
-      "./plugins/withLockScreenAlarm"
+      "./plugins/withLockScreenAlarm",
+      "./modules/expo-system-alarm"
     ],
     "extra": {
       "eas": {

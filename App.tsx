@@ -35,14 +35,22 @@ export default function App() {
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
         console.log("Notification reçue:", notification);
-        // Naviguer immédiatement vers l'écran d'alarme
+        // Pour les alarmes avec fullScreenIntent, naviguer immédiatement
         const data = notification.request.content.data;
-        if (data.stationUrl && data.stationName && navigationRef.current) {
-          navigationRef.current.navigate("AlarmRinging", {
-            stationUrl: data.stationUrl,
-            stationName: data.stationName,
-            vibrate: data.vibrate || false,
-          });
+        if (
+          data.fullScreenIntent &&
+          data.stationUrl &&
+          data.stationName &&
+          navigationRef.current
+        ) {
+          // Forcer la navigation vers l'écran d'alarme
+          setTimeout(() => {
+            navigationRef.current?.navigate("AlarmRinging", {
+              stationUrl: data.stationUrl,
+              stationName: data.stationName,
+              vibrate: data.vibrate || false,
+            });
+          }, 100);
         }
       }
     );
@@ -52,11 +60,14 @@ export default function App() {
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         if (data.stationUrl && data.stationName && navigationRef.current) {
-          navigationRef.current.navigate("AlarmRinging", {
-            stationUrl: data.stationUrl,
-            stationName: data.stationName,
-            vibrate: data.vibrate || false,
-          });
+          // Délai minimal pour assurer que l'app est prête
+          setTimeout(() => {
+            navigationRef.current?.navigate("AlarmRinging", {
+              stationUrl: data.stationUrl,
+              stationName: data.stationName,
+              vibrate: data.vibrate || false,
+            });
+          }, 50);
         }
       });
 

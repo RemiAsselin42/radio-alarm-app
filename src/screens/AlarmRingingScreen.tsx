@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  BackHandler,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
@@ -32,9 +33,22 @@ export const AlarmRingingScreen: React.FC<AlarmRingingScreenProps> = ({
 
     startAlarm();
 
+    // Empêcher le retour avec le bouton back sur Android
+    const backAction = () => {
+      // Ne pas permettre la fermeture avec le bouton back
+      // L'utilisateur doit utiliser les boutons Snooze ou Dismiss
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
     return () => {
       stopAlarm();
       ScreenWakeService.releaseWakeLock();
+      backHandler.remove();
     };
   }, []);
 

@@ -24,6 +24,8 @@ const withLockScreenAlarm = (config) => {
             "android.permission.SYSTEM_ALERT_WINDOW",
             "android.permission.TURN_SCREEN_ON",
             "android.permission.SHOW_WHEN_LOCKED",
+            "android.permission.DISABLE_KEYGUARD",
+            "android.permission.MODIFY_AUDIO_SETTINGS",
         ];
 
         permissions.forEach((permission) => {
@@ -50,6 +52,24 @@ const withLockScreenAlarm = (config) => {
                 mainActivity.$["android:showWhenLocked"] = "true";
                 mainActivity.$["android:turnScreenOn"] = "true";
                 mainActivity.$["android:showOnLockScreen"] = "true";
+                mainActivity.$["android:excludeFromRecents"] = "false";
+
+                // Configurer l'intent-filter pour gérer les alarmes
+                if (!mainActivity["intent-filter"]) {
+                    mainActivity["intent-filter"] = [];
+                }
+
+                // Ajouter un intent-filter spécifique pour les alarmes
+                mainActivity["intent-filter"].push({
+                    action: [
+                        { $: { "android:name": "android.intent.action.MAIN" } },
+                        { $: { "android:name": "com.radioalarm.app.ALARM_ACTION" } }
+                    ],
+                    category: [
+                        { $: { "android:name": "android.intent.category.LAUNCHER" } },
+                        { $: { "android:name": "android.intent.category.DEFAULT" } }
+                    ]
+                });
             }
         }
 

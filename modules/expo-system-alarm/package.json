@@ -1,0 +1,22 @@
+{
+  "name": "expo-system-alarm",
+  "version": "1.0.0",
+  "description": "Native Android system alarms for Expo",
+  "main": "index.js",
+  "scripts": {
+    "build": "expo-module build"
+  },
+  "keywords": [
+    "expo",
+    "alarm",
+    "android",
+    "system"
+  ],
+  "repository": "https://github.com/RemiAsselin42/radio-alarm-app",
+  "author": "RemiAsselin42",
+  "license": "MIT",
+  "expo": {
+    "name": "expo-system-alarm",
+    "version": "1.0.0"
+  }
+}

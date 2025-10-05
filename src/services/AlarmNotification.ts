@@ -3,6 +3,9 @@ import { SchedulableTriggerInputTypes } from "expo-notifications";
 import * as Device from "expo-device";
 import { Platform } from "react-native";
 import { Alarm } from "../types";
+import AndroidAlarmManager from "./AndroidAlarmManager";
+import OptimizedAlarmService from "./OptimizedAlarmService";
+import * as SystemAlarm from "../../modules/expo-system-alarm/functions";
 
 // Configuration pour l'affichage des notifications
 Notifications.setNotificationHandler({
@@ -34,7 +37,40 @@ class AlarmNotificationService {
           return false;
         }
 
+        // Initialiser le service d'alarme optimisé
+        await OptimizedAlarmService.setupSystemLikeAlarms();
+
         // Créer un canal de notification pour Android (canal Alarme)
+        if (Platform.OS === "android") {
+          await Notifications.setNotificationChannelAsync("alarm-channel", {
+            name: "Alarmes Radio",
+            importance: Notifications.AndroidImportance.HIGH,
+            sound: "default",
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#FF231F7C",
+            bypassDnd: true,
+            showBadge: true,
+            enableLights: true,
+            enableVibrate: true,
+            lockscreenVisibility:
+              Notifications.AndroidNotificationVisibility.PUBLIC,
+          });
+
+          // Créer un canal spécial pour les full-screen intents
+          await Notifications.setNotificationChannelAsync("alarm-fullscreen", {
+            name: "Alarmes Plein Écran",
+            importance: Notifications.AndroidImportance.HIGH,
+            sound: "default",
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#FF231F7C",
+            bypassDnd: true,
+            showBadge: true,
+            enableLights: true,
+            enableVibrate: true,
+            lockscreenVisibility:
+              Notifications.AndroidNotificationVisibility.PUBLIC,
+          });
+        }
         if (Platform.OS === "android") {
           await Notifications.setNotificationChannelAsync("alarm", {
             name: "Alarmes Radio",
@@ -76,6 +112,69 @@ class AlarmNotificationService {
 
   async scheduleAlarm(alarm: Alarm): Promise<string | null> {
     try {
+      // Pour Android, essayer d'abord les vraies alarmes système, puis fallback
+      if (Platform.OS === "android") {
+        try {
+          // Tenter d'utiliser le module natif d'alarme système
+          const canScheduleNative = await SystemAlarm.canScheduleExactAlarms();
+          if (canScheduleNative) {
+            const [hours, minutes] = alarm.time.split(":").map(Number);
+            const triggerTime = new Date();
+            triggerTime.setHours(hours, minutes, 0, 0);
+
+            // Si l'heure est déjà passée, programmer pour demain
+            if (triggerTime < new Date()) {
+              triggerTime.setDate(triggerTime.getDate() + 1);
+            }
+
+            const success = await SystemAlarm.scheduleSystemAlarm(
+              alarm.id,
+              triggerTime.getTime(),
+              alarm.station.streamUrl,
+              alarm.station.name,
+              alarm.vibrate || false
+            );
+
+            if (success) {
+              console.log("✅ Native system alarm scheduled successfully");
+              return `native-${alarm.id}`;
+            }
+          }
+        } catch (error) {
+          console.log("⚠️ Native alarm not available, using optimized fallback");
+        }
+
+        // Fallback : Utiliser le service d'alarme optimisé
+        const { canSchedule } =
+          await OptimizedAlarmService.checkAlarmPermissions();
+        if (canSchedule) {
+          const [hours, minutes] = alarm.time.split(":").map(Number);
+          const triggerTime = new Date();
+          triggerTime.setHours(hours, minutes, 0, 0);
+
+          // Si l'heure est déjà passée, programmer pour demain
+          if (triggerTime < new Date()) {
+            triggerTime.setDate(triggerTime.getDate() + 1);
+          }
+
+          const systemAlarmId =
+            await OptimizedAlarmService.scheduleSystemLikeAlarm(
+              alarm.id,
+              triggerTime,
+              alarm.station.streamUrl,
+              alarm.station.name,
+              alarm.vibrate || false
+            );
+
+          if (systemAlarmId) {
+            console.log("🔶 Optimized system-like alarm scheduled successfully");
+            return systemAlarmId;
+          }
+        } else {
+          console.warn("❌ Cannot schedule exact alarms - check permissions");
+        }
+      }
+
       const [hours, minutes] = alarm.time.split(":").map(Number);
 
       // Si pas de jours de répétition, programmer une seule fois
@@ -103,9 +202,11 @@ class AlarmNotificationService {
               stationUrl: alarm.station.streamUrl,
               stationName: alarm.station.name,
               vibrate: alarm.vibrate || false,
+              fullScreenIntent: true,
             },
           },
           trigger: { type: SchedulableTriggerInputTypes.DATE, date: trigger },
+          identifier: `alarm-${alarm.id}`,
         });
 
         return notificationId;
@@ -164,9 +265,11 @@ class AlarmNotificationService {
                 stationUrl: alarm.station.streamUrl,
                 stationName: alarm.station.name,
                 vibrate: alarm.vibrate || false,
+                fullScreenIntent: true,
               },
             },
             trigger: { type: SchedulableTriggerInputTypes.DATE, date: trigger },
+            identifier: `alarm-${alarm.id}-${day}-${week}`,
           });
 
           notificationIds.push(notificationId);
