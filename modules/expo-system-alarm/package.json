@@ -2,7 +2,7 @@
   "name": "expo-system-alarm",
   "version": "1.0.0",
   "description": "Native Android system alarms for Expo",
-  "main": "index.js",
+  "main": "app.plugin.js",
   "scripts": {
     "build": "expo-module build"
   },

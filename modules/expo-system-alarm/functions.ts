@@ -1,6 +1,28 @@
 import { requireNativeModule } from 'expo';
 
-const ExpoSystemAlarmModule = requireNativeModule('ExpoSystemAlarm');
+// Interface TypeScript pour le module natif
+interface ExpoSystemAlarmModule {
+  scheduleSystemAlarm(
+    alarmId: string,
+    triggerTimeMillis: number,
+    stationUrl: string,
+    stationName: string,
+    vibrate: boolean
+  ): Promise<boolean>;
+  
+  cancelSystemAlarm(alarmId: string): Promise<boolean>;
+  
+  setAlarmAudioStream(): Promise<void>;
+  
+  restoreAudioStream(): Promise<void>;
+  
+  canScheduleExactAlarms(): Promise<boolean>;
+  
+  openAlarmSettings(): Promise<void>;
+}
+
+// Obtenir le module natif avec typage
+const NativeModule = requireNativeModule<ExpoSystemAlarmModule>('ExpoSystemAlarm');
 
 export async function scheduleSystemAlarm(
   alarmId: string,
@@ -9,7 +31,7 @@ export async function scheduleSystemAlarm(
   stationName: string,
   vibrate: boolean = false
 ): Promise<boolean> {
-  return ExpoSystemAlarmModule.scheduleSystemAlarm(
+  return NativeModule.scheduleSystemAlarm(
     alarmId,
     triggerTimeMillis,
     stationUrl,
@@ -19,21 +41,21 @@ export async function scheduleSystemAlarm(
 }
 
 export async function cancelSystemAlarm(alarmId: string): Promise<boolean> {
-  return ExpoSystemAlarmModule.cancelSystemAlarm(alarmId);
+  return NativeModule.cancelSystemAlarm(alarmId);
 }
 
 export async function setAlarmAudioStream(): Promise<void> {
-  return ExpoSystemAlarmModule.setAlarmAudioStream();
+  return NativeModule.setAlarmAudioStream();
 }
 
 export async function restoreAudioStream(): Promise<void> {
-  return ExpoSystemAlarmModule.restoreAudioStream();
+  return NativeModule.restoreAudioStream();
 }
 
 export async function canScheduleExactAlarms(): Promise<boolean> {
-  return ExpoSystemAlarmModule.canScheduleExactAlarms();
+  return NativeModule.canScheduleExactAlarms();
 }
 
 export async function openAlarmSettings(): Promise<void> {
-  return ExpoSystemAlarmModule.openAlarmSettings();
+  return NativeModule.openAlarmSettings();
 }
